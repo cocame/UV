@@ -17,70 +17,10 @@
     align-items: center;
     justify-content: center;
     padding: 24px 16px 40px;
-    overflow-x: hidden;
-    position: relative;
-  }
-
-  /* Deep blue sky */
-  .sky {
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(180deg,
-      #1a6abf 0%,
-      #2277cc 25%,
-      #3a8fd4 55%,
-      #6ab0e0 75%,
-      #a8d0ee 88%,
-      #d0e8f8 100%
-    );
-    z-index: 0;
-  }
-
-  /* Cloud layer at bottom */
-  .cloud-layer {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    height: 45%;
-    z-index: 1;
-    pointer-events: none;
-  }
-
-  /* Big fluffy clouds using box-shadow stacking */
-  .cloud-base {
-    position: absolute;
-    background: white;
-    border-radius: 50%;
-  }
-
-  /* Cloud group 1 - left */
-  .cl1 { width: 340px; height: 180px; bottom: 0;   left: -60px;  filter: blur(8px);  opacity: 0.97; border-radius: 50% 50% 0 0; }
-  .cl2 { width: 220px; height: 160px; bottom: 60px; left: -20px; filter: blur(6px);  opacity: 0.95; }
-  .cl3 { width: 180px; height: 150px; bottom: 80px; left: 100px; filter: blur(5px);  opacity: 0.92; }
-
-  /* Cloud group 2 - center */
-  .cc1 { width: 380px; height: 200px; bottom: 0;    left: 50%;  transform: translateX(-50%); filter: blur(10px); opacity: 0.98; border-radius: 50% 50% 0 0; }
-  .cc2 { width: 260px; height: 180px; bottom: 70px; left: 50%;  transform: translateX(-70%); filter: blur(7px);  opacity: 0.93; }
-  .cc3 { width: 240px; height: 170px; bottom: 60px; left: 50%;  transform: translateX(-10%); filter: blur(7px);  opacity: 0.90; }
-  .cc4 { width: 180px; height: 140px; bottom: 120px;left: 50%;  transform: translateX(-50%); filter: blur(5px);  opacity: 0.88; }
-
-  /* Cloud group 3 - right */
-  .cr1 { width: 320px; height: 170px; bottom: 0;   right: -50px; filter: blur(9px);  opacity: 0.96; border-radius: 50% 50% 0 0; }
-  .cr2 { width: 200px; height: 150px; bottom: 55px; right: 10px; filter: blur(6px);  opacity: 0.91; }
-  .cr3 { width: 160px; height: 130px; bottom: 80px; right: 130px;filter: blur(5px);  opacity: 0.87; }
-
-  /* Soft atmospheric haze */
-  .haze {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    height: 30%;
-    background: linear-gradient(to top, rgba(255,255,255,0.6) 0%, transparent 100%);
-    z-index: 2;
-    pointer-events: none;
+    background: linear-gradient(160deg, #1565c0 0%, #1e88e5 40%, #42a5f5 100%);
   }
 
   .main {
-    position: relative;
-    z-index: 3;
     width: 100%;
     max-width: 340px;
     display: flex;
@@ -91,27 +31,26 @@
 
   .card {
     width: 100%;
-    background: rgba(255,255,255,0.22);
-    backdrop-filter: blur(28px);
-    -webkit-backdrop-filter: blur(28px);
-    border: 1px solid rgba(255,255,255,0.55);
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.4);
     border-radius: 28px;
     padding: 32px 28px 28px;
     text-align: center;
-    box-shadow: 0 8px 40px rgba(20,80,160,0.18), inset 0 1px 0 rgba(255,255,255,0.6);
+    box-shadow: 0 8px 40px rgba(0,40,120,0.25);
   }
 
   .city-name {
-    font-size: 20px;
+    font-size: 21px;
     font-weight: 700;
     color: #fff;
-    text-shadow: 0 1px 8px rgba(0,60,140,0.3);
     margin-bottom: 2px;
   }
 
   .subtitle {
     font-size: 11px;
-    color: rgba(255,255,255,0.7);
+    color: rgba(255,255,255,0.75);
     text-transform: uppercase;
     letter-spacing: 0.13em;
     margin-bottom: 24px;
@@ -121,10 +60,9 @@
     font-size: 100px;
     font-weight: 900;
     line-height: 1;
-    color: var(--uv-color, rgba(255,255,255,0.5));
+    color: var(--uv-color, rgba(255,255,255,0.6));
     transition: color 0.5s;
     margin-bottom: 4px;
-    text-shadow: 0 2px 20px rgba(0,0,0,0.1);
   }
 
   .uv-label {
@@ -132,7 +70,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.16em;
-    color: var(--uv-color, rgba(255,255,255,0.5));
+    color: var(--uv-color, rgba(255,255,255,0.6));
     transition: color 0.5s;
     margin-bottom: 20px;
   }
@@ -141,14 +79,12 @@
     font-size: 30px;
     font-weight: 700;
     color: #fff;
-    text-shadow: 0 1px 8px rgba(0,60,140,0.2);
     margin-bottom: 16px;
   }
 
-  /* AQI block */
   .aqi-block {
-    background: rgba(255,255,255,0.18);
-    border: 1px solid rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
     border-radius: 16px;
     padding: 12px 16px;
     margin-bottom: 12px;
@@ -158,18 +94,16 @@
     gap: 10px;
   }
 
-  .aqi-left { text-align: left; }
-
   .aqi-title {
     font-size: 10px;
-    color: rgba(255,255,255,0.65);
+    color: rgba(255,255,255,0.7);
     text-transform: uppercase;
     letter-spacing: 0.1em;
     margin-bottom: 2px;
   }
 
   .aqi-value {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 800;
     color: var(--aqi-color, #fff);
     transition: color 0.5s;
@@ -184,19 +118,19 @@
 
   .aqi-tip {
     font-size: 11px;
-    color: rgba(255,255,255,0.7);
+    color: rgba(255,255,255,0.8);
     text-align: right;
     line-height: 1.4;
-    max-width: 140px;
+    max-width: 130px;
   }
 
   .tip-box {
-    background: rgba(255,255,255,0.18);
-    border: 1px solid rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
     border-radius: 14px;
     padding: 11px 14px;
     font-size: 12px;
-    color: rgba(255,255,255,0.85);
+    color: rgba(255,255,255,0.9);
     line-height: 1.55;
     text-align: left;
   }
@@ -209,19 +143,18 @@
     gap: 6px;
     padding: 10px 22px;
     border-radius: 22px;
-    border: 1px solid rgba(255,255,255,0.5);
-    background: rgba(255,255,255,0.2);
-    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.45);
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(10px);
     color: #fff;
     font-family: 'Outfit', sans-serif;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
-    text-shadow: 0 1px 4px rgba(0,60,140,0.2);
   }
 
-  .geo-btn:hover { background: rgba(255,255,255,0.35); transform: translateY(-1px); }
+  .geo-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-1px); }
 
   .search-wrap { width: 100%; position: relative; }
 
@@ -229,23 +162,23 @@
     width: 100%;
     padding: 11px 16px;
     border-radius: 22px;
-    border: 1px solid rgba(255,255,255,0.5);
-    background: rgba(255,255,255,0.2);
-    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.45);
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(10px);
     font-family: 'Outfit', sans-serif;
     font-size: 14px;
     color: #fff;
     outline: none;
   }
 
-  .search-input::placeholder { color: rgba(255,255,255,0.55); }
-  .search-input:focus { background: rgba(255,255,255,0.3); }
+  .search-input::placeholder { color: rgba(255,255,255,0.6); }
+  .search-input:focus { background: rgba(255,255,255,0.28); }
 
   .dropdown {
     position: absolute;
     top: calc(100% + 6px);
     left: 0; right: 0;
-    background: rgba(30,90,180,0.92);
+    background: rgba(21,101,192,0.96);
     backdrop-filter: blur(20px);
     border-radius: 16px;
     border: 1px solid rgba(255,255,255,0.3);
@@ -277,27 +210,12 @@
     0%, 100% { opacity: 0.3; }
     50% { opacity: 0.7; }
   }
-  .loading .uv-big   { animation: pulse 1.2s ease-in-out infinite; }
-  .loading .temp-row { animation: pulse 1.2s ease-in-out infinite; }
+  .loading .uv-big    { animation: pulse 1.2s ease-in-out infinite; }
+  .loading .temp-row  { animation: pulse 1.2s ease-in-out infinite; }
   .loading .aqi-value { animation: pulse 1.2s ease-in-out infinite; }
 </style>
 </head>
 <body>
-
-<div class="sky"></div>
-<div class="cloud-layer">
-  <div class="cloud-base cl1"></div>
-  <div class="cloud-base cl2"></div>
-  <div class="cloud-base cl3"></div>
-  <div class="cloud-base cc1"></div>
-  <div class="cloud-base cc2"></div>
-  <div class="cloud-base cc3"></div>
-  <div class="cloud-base cc4"></div>
-  <div class="cloud-base cr1"></div>
-  <div class="cloud-base cr2"></div>
-  <div class="cloud-base cr3"></div>
-</div>
-<div class="haze"></div>
 
 <div class="main">
   <div class="card loading" id="card">
@@ -307,7 +225,7 @@
     <div class="uv-label" id="uvLabel">загрузка</div>
     <div class="temp-row" id="temp">–</div>
     <div class="aqi-block">
-      <div class="aqi-left">
+      <div>
         <div class="aqi-title">Качество воздуха</div>
         <div class="aqi-value" id="aqiValue">–</div>
         <div class="aqi-label" id="aqiLabel">загрузка</div>
@@ -378,13 +296,13 @@ function uvInfo(uv) {
   return             { label: 'Экстремальный',   color: '#e879f9', tip: '<strong>Оставайтесь в помещении.</strong> Максимальная защита при выходе.' };
 }
 
-// AQI European index (1-5)
 function aqiInfo(aqi) {
-  if (aqi <= 1) return { label: 'Отличный',     color: '#4ade80', tip: 'Идеальный воздух' };
-  if (aqi <= 2) return { label: 'Хороший',      color: '#a3e635', tip: 'Воздух чистый' };
-  if (aqi <= 3) return { label: 'Умеренный',    color: '#fde047', tip: 'Чувствительным людям осторожно' };
-  if (aqi <= 4) return { label: 'Плохой',       color: '#fb923c', tip: 'Ограничьте время на улице' };
-  return              { label: 'Очень плохой',  color: '#f87171', tip: 'Избегайте улицы' };
+  if (aqi <= 20)  return { label: 'Отличный',    color: '#4ade80', tip: 'Идеальный воздух' };
+  if (aqi <= 40)  return { label: 'Хороший',     color: '#a3e635', tip: 'Воздух чистый' };
+  if (aqi <= 60)  return { label: 'Умеренный',   color: '#fde047', tip: 'Чувствительным осторожно' };
+  if (aqi <= 80)  return { label: 'Плохой',      color: '#fb923c', tip: 'Ограничьте время на улице' };
+  if (aqi <= 100) return { label: 'Очень плохой',color: '#f87171', tip: 'Избегайте улицы' };
+  return               { label: 'Опасный',       color: '#e879f9', tip: 'Оставайтесь дома' };
 }
 
 let currentLat = null, currentLon = null, currentName = 'Дананг';
@@ -394,29 +312,26 @@ async function loadByCoords(lat, lon, name) {
   document.getElementById('card').classList.add('loading');
   document.getElementById('cityName').textContent = name;
   try {
-    const [weatherRes, airRes] = await Promise.all([
-      fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon +
-        '&current=uv_index,temperature_2m&timezone=Asia%2FHo_Chi_Minh&forecast_days=1'),
-      fetch('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=' + lat + '&longitude=' + lon +
-        '&current=european_aqi&timezone=Asia%2FHo_Chi_Minh')
+    const [wRes, aRes] = await Promise.all([
+      fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current=uv_index,temperature_2m&timezone=Asia%2FHo_Chi_Minh&forecast_days=1'),
+      fetch('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=' + lat + '&longitude=' + lon + '&current=european_aqi&timezone=Asia%2FHo_Chi_Minh')
     ]);
-    const weather = await weatherRes.json();
-    const air     = await airRes.json();
+    const w = await wRes.json();
+    const a = await aRes.json();
 
-    const uv  = Math.round(weather.current.uv_index * 10) / 10;
-    const t   = Math.round(weather.current.temperature_2m);
-    const aqi = air.current.european_aqi;
+    const uv  = Math.round(w.current.uv_index * 10) / 10;
+    const t   = Math.round(w.current.temperature_2m);
+    const aqi = a.current.european_aqi;
 
     const uvI  = uvInfo(uv);
     const aqiI = aqiInfo(aqi);
 
     document.documentElement.style.setProperty('--uv-color',  uvI.color);
     document.documentElement.style.setProperty('--aqi-color', aqiI.color);
-
     document.getElementById('card').classList.remove('loading');
-    document.getElementById('uvNum').textContent   = uv;
-    document.getElementById('uvLabel').textContent = uvI.label;
-    document.getElementById('temp').textContent    = t + '°C';
+    document.getElementById('uvNum').textContent    = uv;
+    document.getElementById('uvLabel').textContent  = uvI.label;
+    document.getElementById('temp').textContent     = t + '°C';
     document.getElementById('aqiValue').textContent = aqi;
     document.getElementById('aqiLabel').textContent = aqiI.label;
     document.getElementById('aqiTip').textContent   = aqiI.tip;
