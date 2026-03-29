@@ -75,53 +75,52 @@
     margin-bottom: 20px;
   }
 
-  .temp-row {
-    font-size: 30px;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 16px;
+  /* Temp + AQI side by side */
+  .row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
   }
 
-  .aqi-block {
+  .box {
+    flex: 1;
     background: rgba(255,255,255,0.15);
     border: 1px solid rgba(255,255,255,0.3);
     border-radius: 16px;
-    padding: 12px 16px;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
+    padding: 12px 14px;
+    text-align: left;
   }
 
-  .aqi-title {
+  .box-label {
     font-size: 10px;
-    color: rgba(255,255,255,0.7);
+    color: rgba(255,255,255,0.65);
     text-transform: uppercase;
     letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .box-value {
+    font-size: 26px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
     margin-bottom: 2px;
   }
 
-  .aqi-value {
-    font-size: 24px;
-    font-weight: 800;
+  .box-value.aqi-val {
     color: var(--aqi-color, #fff);
     transition: color 0.5s;
   }
 
-  .aqi-label {
-    font-size: 12px;
+  .box-sub {
+    font-size: 11px;
     font-weight: 600;
-    color: var(--aqi-color, rgba(255,255,255,0.8));
-    transition: color 0.5s;
+    color: rgba(255,255,255,0.7);
   }
 
-  .aqi-tip {
-    font-size: 11px;
-    color: rgba(255,255,255,0.8);
-    text-align: right;
-    line-height: 1.4;
-    max-width: 130px;
+  .box-sub.aqi-sub {
+    color: var(--aqi-color, rgba(255,255,255,0.7));
+    transition: color 0.5s;
   }
 
   .tip-box {
@@ -210,9 +209,8 @@
     0%, 100% { opacity: 0.3; }
     50% { opacity: 0.7; }
   }
-  .loading .uv-big    { animation: pulse 1.2s ease-in-out infinite; }
-  .loading .temp-row  { animation: pulse 1.2s ease-in-out infinite; }
-  .loading .aqi-value { animation: pulse 1.2s ease-in-out infinite; }
+  .loading .uv-big   { animation: pulse 1.2s ease-in-out infinite; }
+  .loading .box-value { animation: pulse 1.2s ease-in-out infinite; }
 </style>
 </head>
 <body>
@@ -223,15 +221,19 @@
     <div class="subtitle">УФ · Температура · Воздух</div>
     <div class="uv-big" id="uvNum">–</div>
     <div class="uv-label" id="uvLabel">загрузка</div>
-    <div class="temp-row" id="temp">–</div>
-    <div class="aqi-block">
-      <div>
-        <div class="aqi-title">Качество воздуха</div>
-        <div class="aqi-value" id="aqiValue">–</div>
-        <div class="aqi-label" id="aqiLabel">загрузка</div>
+
+    <div class="row">
+      <div class="box">
+        <div class="box-label">Температура</div>
+        <div class="box-value" id="temp">–</div>
       </div>
-      <div class="aqi-tip" id="aqiTip">...</div>
+      <div class="box">
+        <div class="box-label">Качество воздуха</div>
+        <div class="box-value aqi-val" id="aqiValue">–</div>
+        <div class="box-sub aqi-sub" id="aqiLabel">загрузка</div>
+      </div>
     </div>
+
     <div class="tip-box" id="tip">Получение данных...</div>
   </div>
 
@@ -297,12 +299,12 @@ function uvInfo(uv) {
 }
 
 function aqiInfo(aqi) {
-  if (aqi <= 20)  return { label: 'Отличный',    color: '#4ade80', tip: 'Идеальный воздух' };
-  if (aqi <= 40)  return { label: 'Хороший',     color: '#a3e635', tip: 'Воздух чистый' };
-  if (aqi <= 60)  return { label: 'Умеренный',   color: '#fde047', tip: 'Чувствительным осторожно' };
-  if (aqi <= 80)  return { label: 'Плохой',      color: '#fb923c', tip: 'Ограничьте время на улице' };
-  if (aqi <= 100) return { label: 'Очень плохой',color: '#f87171', tip: 'Избегайте улицы' };
-  return               { label: 'Опасный',       color: '#e879f9', tip: 'Оставайтесь дома' };
+  if (aqi <= 20)  return { label: 'Отличный',    color: '#4ade80' };
+  if (aqi <= 40)  return { label: 'Хороший',     color: '#a3e635' };
+  if (aqi <= 60)  return { label: 'Умеренный',   color: '#fde047' };
+  if (aqi <= 80)  return { label: 'Плохой',      color: '#fb923c' };
+  if (aqi <= 100) return { label: 'Очень плохой',color: '#f87171' };
+  return               { label: 'Опасный',       color: '#e879f9' };
 }
 
 let currentLat = null, currentLon = null, currentName = 'Дананг';
@@ -311,34 +313,41 @@ async function loadByCoords(lat, lon, name) {
   currentLat = lat; currentLon = lon; currentName = name;
   document.getElementById('card').classList.add('loading');
   document.getElementById('cityName').textContent = name;
+  document.getElementById('tip').textContent = 'Получение данных...';
+
   try {
-    const [wRes, aRes] = await Promise.all([
-      fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current=uv_index,temperature_2m&timezone=Asia%2FHo_Chi_Minh&forecast_days=1'),
-      fetch('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=' + lat + '&longitude=' + lon + '&current=european_aqi&timezone=Asia%2FHo_Chi_Minh')
-    ]);
+    const wRes = await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat +
+      '&longitude=' + lon + '&current=uv_index,temperature_2m&timezone=Asia%2FHo_Chi_Minh&forecast_days=1');
     const w = await wRes.json();
-    const a = await aRes.json();
+    const uv = Math.round(w.current.uv_index * 10) / 10;
+    const t  = Math.round(w.current.temperature_2m);
+    const uvI = uvInfo(uv);
 
-    const uv  = Math.round(w.current.uv_index * 10) / 10;
-    const t   = Math.round(w.current.temperature_2m);
-    const aqi = a.current.european_aqi;
+    document.documentElement.style.setProperty('--uv-color', uvI.color);
+    document.getElementById('uvNum').textContent   = uv;
+    document.getElementById('uvLabel').textContent = uvI.label;
+    document.getElementById('temp').textContent    = t + '°C';
+    document.getElementById('tip').innerHTML       = uvI.tip;
 
-    const uvI  = uvInfo(uv);
-    const aqiI = aqiInfo(aqi);
+    // AQI отдельно — не блокирует основные данные
+    try {
+      const aRes = await fetch('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=' + lat +
+        '&longitude=' + lon + '&current=european_aqi&timezone=Asia%2FHo_Chi_Minh');
+      const a = await aRes.json();
+      const aqi  = a.current.european_aqi;
+      const aqiI = aqiInfo(aqi);
+      document.documentElement.style.setProperty('--aqi-color', aqiI.color);
+      document.getElementById('aqiValue').textContent = aqi;
+      document.getElementById('aqiLabel').textContent = aqiI.label;
+    } catch(e) {
+      document.getElementById('aqiValue').textContent = '–';
+      document.getElementById('aqiLabel').textContent = 'нет данных';
+    }
 
-    document.documentElement.style.setProperty('--uv-color',  uvI.color);
-    document.documentElement.style.setProperty('--aqi-color', aqiI.color);
     document.getElementById('card').classList.remove('loading');
-    document.getElementById('uvNum').textContent    = uv;
-    document.getElementById('uvLabel').textContent  = uvI.label;
-    document.getElementById('temp').textContent     = t + '°C';
-    document.getElementById('aqiValue').textContent = aqi;
-    document.getElementById('aqiLabel').textContent = aqiI.label;
-    document.getElementById('aqiTip').textContent   = aqiI.tip;
-    document.getElementById('tip').innerHTML        = uvI.tip;
-
     const now = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
     document.getElementById('updated').textContent = 'Обновлено ' + now + ' (UTC+7)';
+
   } catch(e) {
     document.getElementById('card').classList.remove('loading');
     document.getElementById('tip').textContent = 'Ошибка загрузки. Проверьте интернет.';
