@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>UV Index</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -17,12 +17,12 @@
     align-items: center;
     justify-content: center;
     padding: 24px 16px 40px;
-    background: linear-gradient(160deg, #1565c0 0%, #1e88e5 40%, #42a5f5 100%);
+    background: #f0f2f5;
   }
 
   .main {
     width: 100%;
-    max-width: 340px;
+    max-width: 320px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -31,110 +31,88 @@
 
   .card {
     width: 100%;
-    background: rgba(255,255,255,0.18);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.4);
+    background: #fff;
     border-radius: 28px;
-    padding: 32px 28px 28px;
+    padding: 32px 24px 28px;
     text-align: center;
-    box-shadow: 0 8px 40px rgba(0,40,120,0.25);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
   }
 
   .city-name {
-    font-size: 21px;
+    font-size: 20px;
     font-weight: 700;
-    color: #fff;
+    color: #1a1a2e;
     margin-bottom: 2px;
   }
 
   .subtitle {
     font-size: 11px;
-    color: rgba(255,255,255,0.75);
+    color: #9aa0aa;
     text-transform: uppercase;
     letter-spacing: 0.13em;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
   }
 
   .uv-big {
-    font-size: 100px;
+    font-size: 96px;
     font-weight: 900;
     line-height: 1;
-    color: var(--uv-color, rgba(255,255,255,0.6));
+    font-variant-numeric: tabular-nums;
+    color: var(--uv-color, #ccc);
     transition: color 0.5s;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    min-height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .uv-label {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.16em;
-    color: var(--uv-color, rgba(255,255,255,0.6));
+    color: var(--uv-color, #ccc);
     transition: color 0.5s;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    min-height: 16px;
   }
 
-  /* Temp + AQI side by side */
   .row {
     display: flex;
     gap: 10px;
-    margin-bottom: 12px;
+    margin-bottom: 0;
   }
 
   .box {
     flex: 1;
-    background: rgba(255,255,255,0.15);
-    border: 1px solid rgba(255,255,255,0.3);
+    background: #f7f8fa;
     border-radius: 16px;
-    padding: 12px 14px;
+    padding: 14px 12px 12px;
     text-align: left;
   }
 
   .box-label {
     font-size: 10px;
-    color: rgba(255,255,255,0.65);
+    color: #9aa0aa;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
   }
 
   .box-value {
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 800;
-    color: #fff;
+    font-variant-numeric: tabular-nums;
     line-height: 1;
-    margin-bottom: 2px;
+    min-height: 28px;
+    color: #1a1a2e;
   }
 
   .box-value.aqi-val {
-    color: var(--aqi-color, #fff);
+    color: var(--aqi-color, #1a1a2e);
     transition: color 0.5s;
   }
-
-  .box-sub {
-    font-size: 11px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.7);
-  }
-
-  .box-sub.aqi-sub {
-    color: var(--aqi-color, rgba(255,255,255,0.7));
-    transition: color 0.5s;
-  }
-
-  .tip-box {
-    background: rgba(255,255,255,0.15);
-    border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 14px;
-    padding: 11px 14px;
-    font-size: 12px;
-    color: rgba(255,255,255,0.9);
-    line-height: 1.55;
-    text-align: left;
-  }
-
-  .tip-box strong { color: #fff; }
 
   .geo-btn {
     display: flex;
@@ -142,18 +120,18 @@
     gap: 6px;
     padding: 10px 22px;
     border-radius: 22px;
-    border: 1px solid rgba(255,255,255,0.45);
-    background: rgba(255,255,255,0.18);
-    backdrop-filter: blur(10px);
-    color: #fff;
+    border: none;
+    background: #fff;
+    color: #3a3a5c;
     font-family: 'Outfit', sans-serif;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
     transition: all 0.2s;
   }
 
-  .geo-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-1px); }
+  .geo-btn:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12); transform: translateY(-1px); }
 
   .search-wrap { width: 100%; position: relative; }
 
@@ -161,27 +139,24 @@
     width: 100%;
     padding: 11px 16px;
     border-radius: 22px;
-    border: 1px solid rgba(255,255,255,0.45);
-    background: rgba(255,255,255,0.18);
-    backdrop-filter: blur(10px);
+    border: none;
+    background: #fff;
     font-family: 'Outfit', sans-serif;
     font-size: 14px;
-    color: #fff;
+    color: #1a1a2e;
     outline: none;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
   }
 
-  .search-input::placeholder { color: rgba(255,255,255,0.6); }
-  .search-input:focus { background: rgba(255,255,255,0.28); }
+  .search-input::placeholder { color: #b0b8c4; }
 
   .dropdown {
     position: absolute;
     top: calc(100% + 6px);
     left: 0; right: 0;
-    background: rgba(21,101,192,0.96);
-    backdrop-filter: blur(20px);
+    background: #fff;
     border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.3);
-    box-shadow: 0 8px 32px rgba(0,40,120,0.3);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
     max-height: 220px;
     overflow-y: auto;
     z-index: 10;
@@ -193,23 +168,23 @@
   .drop-item {
     padding: 10px 16px;
     font-size: 14px;
-    color: #fff;
+    color: #1a1a2e;
     cursor: pointer;
     transition: background 0.15s;
   }
 
-  .drop-item:hover { background: rgba(255,255,255,0.15); }
+  .drop-item:hover { background: #f0f2f5; }
 
   .updated {
     font-size: 10px;
-    color: rgba(255,255,255,0.5);
+    color: #b0b8c4;
   }
 
   @keyframes pulse {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 0.7; }
+    0%, 100% { opacity: 0.25; }
+    50% { opacity: 0.6; }
   }
-  .loading .uv-big   { animation: pulse 1.2s ease-in-out infinite; }
+  .loading .uv-big    { animation: pulse 1.2s ease-in-out infinite; }
   .loading .box-value { animation: pulse 1.2s ease-in-out infinite; }
 </style>
 </head>
@@ -220,21 +195,17 @@
     <div class="city-name" id="cityName">Определение...</div>
     <div class="subtitle">УФ · Температура · Воздух</div>
     <div class="uv-big" id="uvNum">–</div>
-    <div class="uv-label" id="uvLabel">загрузка</div>
-
+    <div class="uv-label" id="uvLabel">&nbsp;</div>
     <div class="row">
       <div class="box">
         <div class="box-label">Температура</div>
         <div class="box-value" id="temp">–</div>
       </div>
       <div class="box">
-        <div class="box-label">Качество воздуха</div>
+        <div class="box-label">Воздух AQI</div>
         <div class="box-value aqi-val" id="aqiValue">–</div>
-        <div class="box-sub aqi-sub" id="aqiLabel">загрузка</div>
       </div>
     </div>
-
-    <div class="tip-box" id="tip">Получение данных...</div>
   </div>
 
   <button class="geo-btn" onclick="geoLocate()">📍 Моё местоположение</button>
@@ -291,20 +262,20 @@ const CITIES = [
 ];
 
 function uvInfo(uv) {
-  if (uv <= 2)  return { label: 'Низкий',        color: '#4ade80', tip: '<strong>Защита не обязательна.</strong> Можно находиться на солнце без ограничений.' };
-  if (uv <= 5)  return { label: 'Умеренный',     color: '#fde047', tip: '<strong>SPF 30+, солнечные очки.</strong> Тень рекомендуется в полдень.' };
-  if (uv <= 7)  return { label: 'Высокий',       color: '#fb923c', tip: '<strong>SPF 50+, тень с 11 до 16ч.</strong> Головной убор обязателен.' };
-  if (uv <= 10) return { label: 'Очень высокий', color: '#f87171', tip: '<strong>SPF 50+, минимум на улице.</strong> Кожа горит за 15–20 минут.' };
-  return             { label: 'Экстремальный',   color: '#e879f9', tip: '<strong>Оставайтесь в помещении.</strong> Максимальная защита при выходе.' };
+  if (uv <= 2)  return { label: 'Низкий',        color: '#22a55a' };
+  if (uv <= 5)  return { label: 'Умеренный',     color: '#c49a00' };
+  if (uv <= 7)  return { label: 'Высокий',       color: '#d4620a' };
+  if (uv <= 10) return { label: 'Очень высокий', color: '#c0392b' };
+  return             { label: 'Экстремальный',   color: '#7d3c98' };
 }
 
-function aqiInfo(aqi) {
-  if (aqi <= 20)  return { label: 'Отличный',    color: '#4ade80' };
-  if (aqi <= 40)  return { label: 'Хороший',     color: '#a3e635' };
-  if (aqi <= 60)  return { label: 'Умеренный',   color: '#fde047' };
-  if (aqi <= 80)  return { label: 'Плохой',      color: '#fb923c' };
-  if (aqi <= 100) return { label: 'Очень плохой',color: '#f87171' };
-  return               { label: 'Опасный',       color: '#e879f9' };
+function aqiColor(aqi) {
+  if (aqi <= 20)  return '#22a55a';
+  if (aqi <= 40)  return '#7ab230';
+  if (aqi <= 60)  return '#c49a00';
+  if (aqi <= 80)  return '#d4620a';
+  if (aqi <= 100) return '#c0392b';
+  return '#7d3c98';
 }
 
 let currentLat = null, currentLon = null, currentName = 'Дананг';
@@ -313,7 +284,6 @@ async function loadByCoords(lat, lon, name) {
   currentLat = lat; currentLon = lon; currentName = name;
   document.getElementById('card').classList.add('loading');
   document.getElementById('cityName').textContent = name;
-  document.getElementById('tip').textContent = 'Получение данных...';
 
   try {
     const wRes = await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat +
@@ -327,30 +297,24 @@ async function loadByCoords(lat, lon, name) {
     document.getElementById('uvNum').textContent   = uv;
     document.getElementById('uvLabel').textContent = uvI.label;
     document.getElementById('temp').textContent    = t + '°C';
-    document.getElementById('tip').innerHTML       = uvI.tip;
-
-    // AQI отдельно — не блокирует основные данные
-    try {
-      const aRes = await fetch('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=' + lat +
-        '&longitude=' + lon + '&current=european_aqi&timezone=Asia%2FHo_Chi_Minh');
-      const a = await aRes.json();
-      const aqi  = a.current.european_aqi;
-      const aqiI = aqiInfo(aqi);
-      document.documentElement.style.setProperty('--aqi-color', aqiI.color);
-      document.getElementById('aqiValue').textContent = aqi;
-      document.getElementById('aqiLabel').textContent = aqiI.label;
-    } catch(e) {
-      document.getElementById('aqiValue').textContent = '–';
-      document.getElementById('aqiLabel').textContent = 'нет данных';
-    }
-
     document.getElementById('card').classList.remove('loading');
+
     const now = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
     document.getElementById('updated').textContent = 'Обновлено ' + now + ' (UTC+7)';
-
   } catch(e) {
     document.getElementById('card').classList.remove('loading');
-    document.getElementById('tip').textContent = 'Ошибка загрузки. Проверьте интернет.';
+    document.getElementById('uvLabel').textContent = 'Ошибка загрузки';
+  }
+
+  try {
+    const aRes = await fetch('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=' + lat +
+      '&longitude=' + lon + '&current=european_aqi&timezone=Asia%2FHo_Chi_Minh');
+    const a = await aRes.json();
+    const aqi = a.current.european_aqi;
+    document.documentElement.style.setProperty('--aqi-color', aqiColor(aqi));
+    document.getElementById('aqiValue').textContent = aqi;
+  } catch(e) {
+    document.getElementById('aqiValue').textContent = '–';
   }
 }
 
