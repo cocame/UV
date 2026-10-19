@@ -193,7 +193,7 @@
 <div class="main">
   <div class="card loading" id="card">
     <div class="city-name" id="cityName">Определение...</div>
-    <div class="subtitle">УФ · Температура · Воздух</div>
+    <div class="subtitle">УФ · Температура · Воздух · Луна</div>
     <div class="uv-big" id="uvNum">–</div>
     <div class="uv-label" id="uvLabel">&nbsp;</div>
     <div class="box" style="margin-bottom:10px">
@@ -203,6 +203,10 @@
     <div class="box">
       <div class="box-label">Воздух AQI</div>
       <div class="box-value aqi-val" id="aqiValue">–</div>
+    </div>
+    <div class="box" style="margin-top:10px">
+      <div class="box-label">Лунный день</div>
+      <div class="box-value" id="moonDay">–</div>
     </div>
   </div>
 
@@ -316,6 +320,35 @@ async function loadByCoords(lat, lon, name) {
   }
 }
 
+function newMoonJD(k) {
+  const T = k / 1236.85, r = Math.PI / 180;
+  const E = 1 - 0.002516 * T - 0.0000074 * T * T;
+  const M  = (2.5534 + 29.1053567 * k) * r;
+  const Mp = (201.5643 + 385.81693528 * k + 0.0107582 * T * T) * r;
+  const F  = (160.7108 + 390.67050284 * k - 0.0016118 * T * T) * r;
+  const O  = (124.7746 - 1.56375588 * k) * r;
+  return 2451550.09766 + 29.530588861 * k + 0.00015437 * T * T
+    - 0.40720 * Math.sin(Mp) + 0.17241 * E * Math.sin(M) + 0.01608 * Math.sin(2 * Mp)
+    + 0.01039 * Math.sin(2 * F) + 0.00739 * E * Math.sin(Mp - M) - 0.00514 * E * Math.sin(Mp + M)
+    + 0.00208 * E * E * Math.sin(2 * M) - 0.00111 * Math.sin(Mp - 2 * F) - 0.00057 * Math.sin(Mp + 2 * F)
+    + 0.00056 * E * Math.sin(2 * Mp + M) - 0.00042 * Math.sin(3 * Mp) + 0.00042 * E * Math.sin(M + 2 * F)
+    + 0.00038 * E * Math.sin(M - 2 * F) - 0.00024 * E * Math.sin(2 * Mp - M) - 0.00017 * Math.sin(O);
+}
+function lunarDay(date) {
+  const jd = date.getTime() / 86400000 + 2440587.5;
+  let k = Math.floor((jd - 2451550.09766) / 29.530588861);
+  if (newMoonJD(k) > jd) k--;
+  if (newMoonJD(k + 1) <= jd) k++;
+  return Math.floor(jd - newMoonJD(k)) + 1;
+}
+
+// Номер лунного дня считается от момента новолуния: первые сутки после него — 1-й день.
+function showMoonDay() {
+  const day = lunarDay(new Date());
+  const phases = ['🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘'];
+  document.getElementById('moonDay').textContent = phases[Math.floor((day - 1) / 29.53 * 8 + 0.5) % 8] + ' ' + day;
+}
+
 function geoLocate() {
   if (!navigator.geolocation) { loadByCoords(16.047, 108.206, 'Дананг'); return; }
   document.getElementById('cityName').textContent = 'Определение...';
@@ -350,7 +383,9 @@ document.addEventListener('click', e => {
 });
 
 geoLocate();
+showMoonDay();
 setInterval(() => {
+  showMoonDay();
   if (currentLat) loadByCoords(currentLat, currentLon, currentName);
 }, 30 * 60 * 1000);
 </script>
