@@ -92,12 +92,12 @@
     text-align: center;
   }
 
-  .box.full-moon {
+  .box.ekadashi {
     background: linear-gradient(135deg, #fff6d6, #ffe9a8);
     box-shadow: 0 0 0 2px #f2c94c, 0 0 24px rgba(242, 201, 76, 0.55);
   }
-  .box.full-moon .box-label { color: #a07800; font-weight: 700; }
-  .box.full-moon .box-value { color: #8a6500; }
+  .box.ekadashi .box-label { color: #a07800; font-weight: 700; }
+  .box.ekadashi .box-value { color: #8a6500; }
 
   .box-label {
     font-size: 10px;
@@ -291,6 +291,7 @@ let currentLat = null, currentLon = null, currentName = 'Дананг';
 
 async function loadByCoords(lat, lon, name) {
   currentLat = lat; currentLon = lon; currentName = name;
+  showMoonDay();
   document.getElementById('card').classList.add('loading');
   document.getElementById('cityName').textContent = name;
 
@@ -341,33 +342,78 @@ function newMoonJD(k) {
     + 0.00056 * E * Math.sin(2 * Mp + M) - 0.00042 * Math.sin(3 * Mp) + 0.00042 * E * Math.sin(M + 2 * F)
     + 0.00038 * E * Math.sin(M - 2 * F) - 0.00024 * E * Math.sin(2 * Mp - M) - 0.00017 * Math.sin(O);
 }
-// Полнолуние по Миусу: те же формулы, что для новолуния, с k + 0.5 и своими коэффициентами.
-function fullMoonJD(k) {
-  k += 0.5;
-  const T = k / 1236.85, r = Math.PI / 180;
-  const E = 1 - 0.002516 * T - 0.0000074 * T * T;
-  const M  = (2.5534 + 29.1053567 * k) * r;
-  const Mp = (201.5643 + 385.81693528 * k + 0.0107582 * T * T) * r;
-  const F  = (160.7108 + 390.67050284 * k - 0.0016118 * T * T) * r;
-  const O  = (124.7746 - 1.56375588 * k) * r;
-  return 2451550.09766 + 29.530588861 * k + 0.00015437 * T * T
-    - 0.40614 * Math.sin(Mp) + 0.17302 * E * Math.sin(M) + 0.01614 * Math.sin(2 * Mp)
-    + 0.01043 * Math.sin(2 * F) + 0.00734 * E * Math.sin(Mp - M) - 0.00515 * E * Math.sin(Mp + M)
-    + 0.00209 * E * E * Math.sin(2 * M) - 0.00111 * Math.sin(Mp - 2 * F) - 0.00057 * Math.sin(Mp + 2 * F)
-    + 0.00056 * E * Math.sin(2 * Mp + M) - 0.00042 * Math.sin(3 * Mp) + 0.00042 * E * Math.sin(M + 2 * F)
-    + 0.00038 * E * Math.sin(M - 2 * F) - 0.00024 * E * Math.sin(2 * Mp - M) - 0.00017 * Math.sin(O);
+// Экадаши: 11-й титхи (лунные сутки по индийскому календарю) в каждой половине месяца —
+// после новолуния и после полнолуния. День экадаши — тот, на восходе которого идёт 11-й титхи.
+const DEG = Math.PI / 180;
+const norm = a => ((a % 360) + 360) % 360;
+
+// Долгота Солнца (Миус, гл. 25), точность ~0.01°.
+function sunLon(jd) {
+  const T = (jd - 2451545) / 36525;
+  const L0 = 280.46646 + 36000.76983 * T;
+  const M = (357.52911 + 35999.05029 * T) * DEG;
+  const C = (1.914602 - 0.004817 * T) * Math.sin(M) + 0.019993 * Math.sin(2 * M) + 0.000289 * Math.sin(3 * M);
+  const om = (125.04 - 1934.136 * T) * DEG;
+  return norm(L0 + C - 0.00569 - 0.00478 * Math.sin(om));
 }
 
-// Полнолуние сегодня — если момент полнолуния попадает в текущие сутки по времени Вьетнама (UTC+7).
-function isFullMoonDay(date) {
-  const tz = 7 / 24;
-  const jd = date.getTime() / 86400000 + 2440587.5;
-  const dayStart = Math.floor(jd + tz - 0.5) + 0.5 - tz;
-  const k = Math.round((jd - 2451550.09766) / 29.530588861 - 0.5);
-  return [k - 1, k, k + 1].some(i => {
-    const f = fullMoonJD(i);
-    return f >= dayStart && f < dayStart + 1;
-  });
+// Долгота Луны (Миус, гл. 47, главные члены), точность ~0.01°.
+const MOON_TERMS = [
+  [0,0,1,0,6288774],[2,0,-1,0,1274027],[2,0,0,0,658314],[0,0,2,0,213618],[0,1,0,0,-185116],
+  [0,0,0,2,-114332],[2,0,-2,0,58793],[2,-1,-1,0,57066],[2,0,1,0,53322],[2,-1,0,0,45758],
+  [0,1,-1,0,-40923],[1,0,0,0,-34720],[0,1,1,0,-30383],[2,0,0,-2,15327],[0,0,1,2,-12528],
+  [0,0,1,-2,10980],[4,0,-1,0,10675],[0,0,3,0,10034],[4,0,-2,0,8548],[2,1,-1,0,-7888],
+  [2,1,0,0,-6766],[1,0,-1,0,-5163],[1,1,0,0,4987],[2,-1,1,0,4036],[2,0,2,0,3994],
+  [4,0,0,0,3861],[2,0,-3,0,3665],[0,1,-2,0,-2689],[2,0,-1,2,-2602],[2,-1,-2,0,2390],
+  [1,0,1,0,-2348],[2,-2,0,0,2236],[0,1,2,0,-2120],[0,2,0,0,-2069],[2,-2,-1,0,2048],
+];
+function moonLon(jd) {
+  const T = (jd - 2451545) / 36525;
+  const Lp = 218.3164477 + 481267.88123421 * T;
+  const D = (297.8501921 + 445267.1114034 * T) * DEG;
+  const M = (357.5291092 + 35999.0502909 * T) * DEG;
+  const Mp = (134.9633964 + 477198.8675055 * T) * DEG;
+  const F = (93.272095 + 483202.0175233 * T) * DEG;
+  const E = 1 - 0.002516 * T;
+  let s = 0;
+  for (const [d, m, mp, f, c] of MOON_TERMS)
+    s += c * Math.pow(E, Math.abs(m)) * Math.sin(d * D + m * M + mp * Mp + f * F);
+  const om = (125.04 - 1934.136 * T) * DEG;
+  return norm(Lp + s / 1e6 + 0.00392 * Math.sin((119.75 + 131.849 * T) * DEG) - 0.00478 * Math.sin(om));
+}
+
+const tithiAt = jd => Math.floor(norm(moonLon(jd) - sunLon(jd)) / 12) + 1;
+
+// Восход Солнца (UTC, юлианская дата) для календарного дня по времени UTC+tz.
+function sunriseJD(y, m, d, lat, lon) {
+  let jd = Date.UTC(y, m - 1, d, 12) / 86400000 + 2440587.5 - lon / 360;
+  for (let i = 0; i < 3; i++) {
+    const T = (jd - 2451545) / 36525;
+    const M = (357.52911 + 35999.05029 * T) * DEG;
+    const L = sunLon(jd) * DEG;
+    const eps = 23.439 * DEG;
+    const dec = Math.asin(Math.sin(eps) * Math.sin(L));
+    const eqt = -1.915 * Math.sin(M) - 0.02 * Math.sin(2 * M) + 2.466 * Math.sin(2 * L) - 0.053 * Math.sin(4 * L);
+    const cosH = (Math.sin(-0.833 * DEG) - Math.sin(lat * DEG) * Math.sin(dec)) / (Math.cos(lat * DEG) * Math.cos(dec));
+    const H = Math.acos(Math.max(-1, Math.min(1, cosH))) / DEG;
+    const noon = Date.UTC(y, m - 1, d) / 86400000 + 2440587.5 + (12 - lon / 15 - eqt / 60) / 24;
+    jd = noon - H / 360;
+  }
+  return jd;
+}
+
+function isEkadashi(date, lat, lon, tz) {
+  const local = new Date(date.getTime() + tz * 3600000);
+  const y = local.getUTCFullYear(), m = local.getUTCMonth() + 1, d = local.getUTCDate();
+  const t = tithiAt(sunriseJD(y, m, d, lat, lon));
+  const prev = new Date(Date.UTC(y, m - 1, d - 1));
+  const t0 = tithiAt(sunriseJD(prev.getUTCFullYear(), prev.getUTCMonth() + 1, prev.getUTCDate(), lat, lon));
+  // Если 11-й титхи стоит на двух восходах подряд, экадаши — первый из этих дней.
+  if (t === 11 || t === 26) return t0 !== t;
+  // Если 11-й титхи целиком уместился между двумя восходами, экадаши — этот день.
+  const next = new Date(Date.UTC(y, m - 1, d + 1));
+  const t2 = tithiAt(sunriseJD(next.getUTCFullYear(), next.getUTCMonth() + 1, next.getUTCDate(), lat, lon));
+  return (t === 10 && t2 === 12) || (t === 25 && t2 === 27);
 }
 
 function lunarDay(date) {
@@ -382,10 +428,10 @@ function lunarDay(date) {
 function showMoonDay() {
   const day = lunarDay(new Date());
   const phases = ['🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘'];
-  const full = isFullMoonDay(new Date());
-  document.getElementById('moonDay').textContent = (full ? '🌕' : phases[Math.floor((day - 1) / 29.53 * 8 + 0.5) % 8]) + ' ' + day;
-  document.getElementById('moonBox').classList.toggle('full-moon', full);
-  document.getElementById('moonLabel').textContent = full ? 'Полнолуние · лунный день' : 'Лунный день';
+  const eka = isEkadashi(new Date(), currentLat ?? 16.047, currentLon ?? 108.206, 7);
+  document.getElementById('moonDay').textContent = phases[Math.floor((day - 1) / 29.53 * 8 + 0.5) % 8] + ' ' + day;
+  document.getElementById('moonBox').classList.toggle('ekadashi', eka);
+  document.getElementById('moonLabel').textContent = eka ? 'Экадаши · лунный день' : 'Лунный день';
 }
 
 function geoLocate() {
