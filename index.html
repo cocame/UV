@@ -92,6 +92,13 @@
     text-align: center;
   }
 
+  .box.full-moon {
+    background: linear-gradient(135deg, #fff6d6, #ffe9a8);
+    box-shadow: 0 0 0 2px #f2c94c, 0 0 24px rgba(242, 201, 76, 0.55);
+  }
+  .box.full-moon .box-label { color: #a07800; font-weight: 700; }
+  .box.full-moon .box-value { color: #8a6500; }
+
   .box-label {
     font-size: 10px;
     color: #9aa0aa;
@@ -204,8 +211,8 @@
       <div class="box-label">Воздух AQI</div>
       <div class="box-value aqi-val" id="aqiValue">–</div>
     </div>
-    <div class="box" style="margin-top:10px">
-      <div class="box-label">Лунный день</div>
+    <div class="box" id="moonBox" style="margin-top:10px">
+      <div class="box-label" id="moonLabel">Лунный день</div>
       <div class="box-value" id="moonDay">–</div>
     </div>
   </div>
@@ -334,6 +341,35 @@ function newMoonJD(k) {
     + 0.00056 * E * Math.sin(2 * Mp + M) - 0.00042 * Math.sin(3 * Mp) + 0.00042 * E * Math.sin(M + 2 * F)
     + 0.00038 * E * Math.sin(M - 2 * F) - 0.00024 * E * Math.sin(2 * Mp - M) - 0.00017 * Math.sin(O);
 }
+// Полнолуние по Миусу: те же формулы, что для новолуния, с k + 0.5 и своими коэффициентами.
+function fullMoonJD(k) {
+  k += 0.5;
+  const T = k / 1236.85, r = Math.PI / 180;
+  const E = 1 - 0.002516 * T - 0.0000074 * T * T;
+  const M  = (2.5534 + 29.1053567 * k) * r;
+  const Mp = (201.5643 + 385.81693528 * k + 0.0107582 * T * T) * r;
+  const F  = (160.7108 + 390.67050284 * k - 0.0016118 * T * T) * r;
+  const O  = (124.7746 - 1.56375588 * k) * r;
+  return 2451550.09766 + 29.530588861 * k + 0.00015437 * T * T
+    - 0.40614 * Math.sin(Mp) + 0.17302 * E * Math.sin(M) + 0.01614 * Math.sin(2 * Mp)
+    + 0.01043 * Math.sin(2 * F) + 0.00734 * E * Math.sin(Mp - M) - 0.00515 * E * Math.sin(Mp + M)
+    + 0.00209 * E * E * Math.sin(2 * M) - 0.00111 * Math.sin(Mp - 2 * F) - 0.00057 * Math.sin(Mp + 2 * F)
+    + 0.00056 * E * Math.sin(2 * Mp + M) - 0.00042 * Math.sin(3 * Mp) + 0.00042 * E * Math.sin(M + 2 * F)
+    + 0.00038 * E * Math.sin(M - 2 * F) - 0.00024 * E * Math.sin(2 * Mp - M) - 0.00017 * Math.sin(O);
+}
+
+// Полнолуние сегодня — если момент полнолуния попадает в текущие сутки по времени Вьетнама (UTC+7).
+function isFullMoonDay(date) {
+  const tz = 7 / 24;
+  const jd = date.getTime() / 86400000 + 2440587.5;
+  const dayStart = Math.floor(jd + tz - 0.5) + 0.5 - tz;
+  const k = Math.round((jd - 2451550.09766) / 29.530588861 - 0.5);
+  return [k - 1, k, k + 1].some(i => {
+    const f = fullMoonJD(i);
+    return f >= dayStart && f < dayStart + 1;
+  });
+}
+
 function lunarDay(date) {
   const jd = date.getTime() / 86400000 + 2440587.5;
   let k = Math.floor((jd - 2451550.09766) / 29.530588861);
@@ -346,7 +382,10 @@ function lunarDay(date) {
 function showMoonDay() {
   const day = lunarDay(new Date());
   const phases = ['🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘'];
-  document.getElementById('moonDay').textContent = phases[Math.floor((day - 1) / 29.53 * 8 + 0.5) % 8] + ' ' + day;
+  const full = isFullMoonDay(new Date());
+  document.getElementById('moonDay').textContent = (full ? '🌕' : phases[Math.floor((day - 1) / 29.53 * 8 + 0.5) % 8]) + ' ' + day;
+  document.getElementById('moonBox').classList.toggle('full-moon', full);
+  document.getElementById('moonLabel').textContent = full ? 'Полнолуние · лунный день' : 'Лунный день';
 }
 
 function geoLocate() {
